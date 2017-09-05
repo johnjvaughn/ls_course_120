@@ -21,7 +21,9 @@ puts <<-QA
 Q. What could you add to this class to simplify it and remove two methods
    from the class definition while still maintaining the same functionality?
 
-A. Add an attr_accessor for instance variable @type.
+A. Add an attr_accessor for instance variable @type. Also, in def describe_type,
+reference the type accessor method instead of the instance variable directly.
+
 attr_accessor :type
 
 class BeesWax
@@ -32,7 +34,7 @@ class BeesWax
   end
 
   def describe_type
-    puts "I am a #{@type} of Bees Wax"
+    puts "I am a \#{type} of Bees Wax"
   end
 end
 
