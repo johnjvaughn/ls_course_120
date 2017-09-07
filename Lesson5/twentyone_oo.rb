@@ -56,6 +56,7 @@ class Card
 end
 
 class Shoe
+  # 'Shoe' rather than 'Deck' to allow for possibility of multiple decks
   RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
   SUITS = ['C', 'D', 'H', 'S']
   attr_reader :num_decks
@@ -142,8 +143,6 @@ end
 
 class Participant
   include Helpers
-  VALID_ACTION_PROMPT = "Hit or Stand?"
-  VALID_ACTIONS = { 'hit' => 'h', 'stand' => 's' }
   attr_reader :name, :hand, :result
 
   def to_s
@@ -225,7 +224,7 @@ class Player < Participant
   private
 
   def make_decision
-    user_choice(VALID_ACTION_PROMPT, VALID_ACTIONS)
+    user_choice("Hit or Stand?", { 'hit' => 'h', 'stand' => 's' })
   end
 end
 
