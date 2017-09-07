@@ -180,7 +180,7 @@ class Participant
     @result = result
   end
 
-  def reset(shoe)
+  def deal_new_hand(shoe)
     @hand = Hand.new(shoe)
   end
 end
@@ -203,7 +203,7 @@ class Dealer < Participant
     super
   end
 
-  def reset(shoe)
+  def deal_new_hand(shoe)
     @hand = Hand.new(shoe, 'one_down')
   end
 
@@ -268,8 +268,8 @@ class TwentyOneGame
   def shuffle_and_deal
     shoe.collect_cards
     shoe.shuffle
-    player.reset(shoe)
-    dealer.reset(shoe)
+    player.deal_new_hand(shoe)
+    dealer.deal_new_hand(shoe)
   end
 
   def show_both_hands
@@ -343,6 +343,7 @@ class TwentyOneGame
   end
 
   def display_goodbye_message
+    puts
     prompt "Thanks for playing Twenty-One, #{player.name}. Goodbye!"
   end
 end
