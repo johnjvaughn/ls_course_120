@@ -182,6 +182,7 @@ class Participant
 
   def deal_new_hand(shoe)
     @hand = Hand.new(shoe)
+    @result = nil
   end
 end
 
@@ -205,6 +206,7 @@ class Dealer < Participant
 
   def deal_new_hand(shoe)
     @hand = Hand.new(shoe, 'one_down')
+    @result = nil
   end
 
   private
