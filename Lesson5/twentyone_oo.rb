@@ -266,6 +266,7 @@ class TwentyOneGame
   end
 
   def assign_player_names
+    # can assign dealer's name here also, if desired
     player.assign_name
   end
 
