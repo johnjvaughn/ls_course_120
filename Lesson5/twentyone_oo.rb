@@ -63,6 +63,8 @@ class Shoe
 
   def initialize(num_decks = 1)
     @num_decks = num_decks
+    collect_cards
+    shuffle
   end
 
   def shuffle
@@ -143,19 +145,19 @@ end
 
 class Participant
   include Helpers
-  attr_reader :name, :hand, :result
+  attr_reader :name, :hand, :final_status
 
   def to_s
     format "%13s has %s", name, hand
   end
 
   def play(shoe)
-    return record_result('bj') if hand.bj?
+    return record_final_status('bj') if hand.bj?
     loop do
       return stand if make_decision == 'stand'
       hit(shoe)
-      return record_result('bust') if hand.bust?
-      return record_result(hand.total) if hand.perfect?
+      return record_final_status('bust') if hand.bust?
+      return record_final_status(hand.total) if hand.perfect?
     end
   end
 
@@ -165,7 +167,7 @@ class Participant
   end
 
   def stand
-    record_result(hand.total)
+    record_final_status(hand.total)
     prompt "#{name} stands with #{hand.total}."
   end
 
@@ -176,13 +178,13 @@ class Participant
     sleep 1
   end
 
-  def record_result(result)
-    @result = result
+  def record_final_status(status)
+    @final_status = status
   end
 
   def deal_new_hand(shoe)
     @hand = Hand.new(shoe)
-    @result = nil
+    @final_status = nil
   end
 end
 
@@ -251,7 +253,7 @@ class TwentyOneGame
       show_both_hands
       player_turn
       dealer_turn
-      show_result
+      show_hand_result
       break unless play_again?
     end
     display_goodbye_message
@@ -289,54 +291,54 @@ class TwentyOneGame
   end
 
   def dealer_turn
-    if ['bust', 'bj'].include?(player.result)
-      dealer.record_result(dealer.total)
+    if ['bust', 'bj'].include?(player.final_status)
+      dealer.record_final_status(dealer.total)
       dealer.show_hand
     else
       dealer.play(shoe)
     end
   end
 
-  def show_tie_result
-    if player.result == dealer.result
-      prompt "It's a push, #{player.result} to #{dealer.result}."
-      return true
-    end
-    false
+  def check_for_tie_result
+    message = "It's a push, #{player.final_status} to #{dealer.final_status}."
+    message if player.final_status == dealer.final_status
   end
 
-  def show_bust_result
-    if player.result == 'bust'
-      prompt "#{dealer.name} wins automatically since #{player.name} busted."
-      return true
-    elsif dealer.result == 'bust'
-      prompt "#{player.name} wins automatically since #{dealer.name} busted."
-      return true
+  def check_for_bust_result
+    if player.final_status == 'bust'
+      "#{dealer.name} wins automatically since #{player.name} busted."
+    elsif dealer.final_status == 'bust'
+      "#{player.name} wins automatically since #{dealer.name} busted."
     end
-    false
   end
 
-  def show_bj_result
-    if player.result == 'bj'
-      prompt "#{player.name} wins with Blackjack."
-      return true
-    elsif dealer.result == 'bj'
-      prompt "#{dealer.name} wins with Blackjack."
-      return true
+  def check_for_bj_result
+    if player.final_status == 'bj'
+      "#{player.name} wins with Blackjack."
+    elsif dealer.final_status == 'bj'
+      "#{dealer.name} wins with Blackjack."
     end
-    false
   end
 
-  def show_result
+  def obtain_result_by_points
+    # run this last after for checking other cases (tie, bust, or bj)
+    winner = player.final_status > dealer.final_status ? player : dealer
+    loser = winner == player ? dealer : player
+    "#{winner.name} wins, #{winner.final_status} to #{loser.final_status}."
+    # player_result = player.final_status
+    # dealer_result = dealer.final_status
+    # if player_result > dealer_result
+    #   "#{player.name} wins, #{player_result} to #{dealer_result}."
+    # else
+    #   "#{dealer.name} wins, #{dealer_result} to #{player_result}."
+    # end
+  end
+
+  def show_hand_result
     puts
-    return if show_tie_result || show_bust_result || show_bj_result
-    player_result = player.result
-    dealer_result = dealer.result
-    if player_result > dealer_result
-      prompt "#{player.name} wins, #{player_result} to #{dealer_result}."
-    else
-      prompt "#{dealer.name} wins, #{dealer_result} to #{player_result}."
-    end
+    result_message = check_for_tie_result || check_for_bust_result ||
+                     check_for_bj_result || obtain_result_by_points
+    prompt result_message
     puts
   end
 
