@@ -325,13 +325,6 @@ class TwentyOneGame
     winner = player.final_status > dealer.final_status ? player : dealer
     loser = winner == player ? dealer : player
     "#{winner.name} wins, #{winner.final_status} to #{loser.final_status}."
-    # player_result = player.final_status
-    # dealer_result = dealer.final_status
-    # if player_result > dealer_result
-    #   "#{player.name} wins, #{player_result} to #{dealer_result}."
-    # else
-    #   "#{dealer.name} wins, #{dealer_result} to #{player_result}."
-    # end
   end
 
   def show_hand_result
