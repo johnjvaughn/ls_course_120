@@ -149,6 +149,8 @@ class Participant
 
   def initialize(name = self.class.to_s)
     @name = name
+    @hand = []
+    @final_status = nil
   end
 
   def to_s
@@ -208,7 +210,7 @@ class Dealer < Participant
 
   def deal_new_hand(shoe)
     @hand = Hand.new(shoe, 'one_down')
-    @result = nil
+    @final_status = nil
   end
 
   private
@@ -305,20 +307,15 @@ class TwentyOneGame
     message if player.final_status == dealer.final_status
   end
 
-  def check_for_bust_result
-    if player.final_status == 'bust'
-      "#{dealer.name} wins automatically since #{player.name} busted."
-    elsif dealer.final_status == 'bust'
-      "#{player.name} wins automatically since #{dealer.name} busted."
-    end
+  def check_for_bust_result(participant1, participant2)
+    message = "#{participant2.name} wins automatically since \
+#{participant1.name} busted."
+    message if participant1.final_status == 'bust'
   end
 
-  def check_for_bj_result
-    if player.final_status == 'bj'
-      "#{player.name} wins with Blackjack."
-    elsif dealer.final_status == 'bj'
-      "#{dealer.name} wins with Blackjack."
-    end
+  def check_for_bj_result(participant)
+    message = "#{participant.name} wins with Blackjack."
+    message if participant.final_status == 'bj'
   end
 
   def obtain_result_by_points
@@ -330,8 +327,12 @@ class TwentyOneGame
 
   def show_hand_result
     puts
-    result_message = check_for_tie_result || check_for_bust_result ||
-                     check_for_bj_result || obtain_result_by_points
+    result_message = check_for_tie_result ||
+                     check_for_bust_result(player, dealer) ||
+                     check_for_bust_result(dealer, player) ||
+                     check_for_bj_result(player) ||
+                     check_for_bj_result(dealer) ||
+                     obtain_result_by_points
     prompt result_message
     puts
   end
