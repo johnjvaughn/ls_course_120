@@ -147,6 +147,10 @@ class Participant
   include Helpers
   attr_reader :name, :hand, :final_status
 
+  def initialize(name = self.class.to_s)
+    @name = name
+  end
+
   def to_s
     format "%13s has %s", name, hand
   end
@@ -190,10 +194,6 @@ end
 
 class Dealer < Participant
   STAND_AT_TOTAL = 17
-
-  def initialize(name)
-    @name = name
-  end
 
   def show_hand
     hand.put_face_up
